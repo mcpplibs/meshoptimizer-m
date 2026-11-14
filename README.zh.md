@@ -15,6 +15,10 @@
 简化、meshlet、空间排序、顶点／索引／meshlet 编解码——逐字节取自 1.3 发布包并随本包
 构建，不链接其他东西。
 
+库以 `-ffp-contract=off`、不开 fast math 编译，同样的输入在每个平台上逐位得到同样的
+输出：按平台默认，arm64 会把乘与加合成一次舍入，打乱的 48 × 48 网格得到的 meshlet
+与 x86-64 不同（1.3.1 起；1.3 用的是平台默认）。
+
 ## Modules
 
 - `import mcpplibs.mwrap.meshoptimizer;`：全部 API（118 个名字：9 个类型、20 个枚举值、89 个函数），并再导出下面这个
@@ -25,7 +29,7 @@
 ## 快速开始
 
 ```sh
-mcpp new lod --template mcpplibs.mwrap.meshoptimizer@1.3
+mcpp new lod --template mcpplibs.mwrap.meshoptimizer@1.3.1
 cd lod
 mcpp run
 ```
@@ -34,7 +38,7 @@ mcpp run
 
 ```toml
 [dependencies]
-mcpplibs.mwrap.meshoptimizer = "1.3"
+mcpplibs.mwrap.meshoptimizer = "1.3.1"
 ```
 
 ```cpp

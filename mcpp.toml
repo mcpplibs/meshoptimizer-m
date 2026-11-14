@@ -2,7 +2,7 @@
 [package]
 namespace   = "mcpplibs.mwrap"
 name        = "meshoptimizer"
-version     = "1.3"
+version     = "1.3.1"
 description = "meshoptimizer 1.3 C++ modules for mcpp (import mcpplibs.mwrap.meshoptimizer;): mesh indexing, vertex cache / overdraw / fetch optimization, simplification, meshlets, and the vertex / index codecs"
 license     = "Apache-2.0"
 authors     = ["mcpp-community"]
@@ -17,6 +17,10 @@ kind = "lib"
 # (upstream/documents.json: the release tarball, each file's checksum).
 sources      = ["src/*.cppm", "upstream/meshoptimizer/src/*.cpp"]
 include_dirs = ["upstream/meshoptimizer/src"]
+# Every platform makes the same meshlets, clusters and simplifications: the
+# compiler fuses no multiply and add into one rounding (arm64's default does,
+# x86-64's cannot without FMA), so no float decision differs by platform.
+cxxflags     = ["-ffp-contract=off", "-fno-fast-math"]
 
 [dev-dependencies]
 compat.gtest = "1.15.2"

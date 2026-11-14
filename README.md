@@ -17,6 +17,12 @@ vertex fetch optimization, simplification, meshlets, spatial ordering, the
 vertex, index and meshlet codecs — is vendored byte for byte from the 1.3
 release and built with the package; nothing else is linked.
 
+The library is built with `-ffp-contract=off` and without fast math, so the
+same input gives the same output bit for bit on every platform: with the
+platform's own default arm64 fuses a multiply and an add into one rounding
+and the meshlets of a scattered 48 × 48 sheet differ from x86-64's (from
+1.3.1; 1.3 kept the platform's default).
+
 ## Modules
 
 - `import mcpplibs.mwrap.meshoptimizer;`: the whole API (118 names: 9 types, 20 enumerators, 89 functions), re-exporting the one below
@@ -27,7 +33,7 @@ release and built with the package; nothing else is linked.
 ## Getting started
 
 ```sh
-mcpp new lod --template mcpplibs.mwrap.meshoptimizer@1.3
+mcpp new lod --template mcpplibs.mwrap.meshoptimizer@1.3.1
 cd lod
 mcpp run
 ```
@@ -37,7 +43,7 @@ and simplifies it to a tenth of its triangles.
 
 ```toml
 [dependencies]
-mcpplibs.mwrap.meshoptimizer = "1.3"
+mcpplibs.mwrap.meshoptimizer = "1.3.1"
 ```
 
 ```cpp
