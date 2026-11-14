@@ -1,0 +1,4 @@
+[template]
+description  = "Index, reorder and simplify a mesh with import mcpplibs.mwrap.meshoptimizer"
+default      = true
+post_message = "Run `mcpp run`: a grid of quads is indexed, ordered for the vertex cache and simplified."

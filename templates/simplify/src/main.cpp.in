@@ -1,0 +1,38 @@
+// A grid of quads, every corner its own vertex: indexed, ordered for the
+// vertex cache, and simplified — through import mcpplibs.mwrap.meshoptimizer.
+import std;
+import mcpplibs.mwrap.meshoptimizer;
+
+struct Vertex {
+    float x, y, z;
+};
+
+int main() {
+    constexpr unsigned side = 32;
+    std::vector<Vertex> corners;
+    for (unsigned row = 0; row < side; ++row)
+        for (unsigned column = 0; column < side; ++column) {
+            const float x = static_cast<float>(column), y = static_cast<float>(row);
+            // A gentle wave, so that simplifying has something to keep.
+            const auto at = [](float px, float py) { return Vertex{px, py, 0.5f * std::sin(px * 0.3f) * std::cos(py * 0.3f)}; };
+            for (const auto& corner : {std::pair{0.f, 0.f}, {1.f, 0.f}, {1.f, 1.f}, {0.f, 0.f}, {1.f, 1.f}, {0.f, 1.f}}) corners.push_back(at(x + corner.first, y + corner.second));
+        }
+
+    std::vector<unsigned int> remap(corners.size());
+    const std::size_t unique = meshopt_generateVertexRemap(remap.data(), nullptr, corners.size(), corners.data(), corners.size(), sizeof(Vertex));
+    std::vector<Vertex>       vertices(unique);
+    std::vector<unsigned int> indices(corners.size());
+    meshopt_remapIndexBuffer(indices.data(), nullptr, corners.size(), remap.data());
+    meshopt_remapVertexBuffer(vertices.data(), corners.data(), corners.size(), sizeof(Vertex), remap.data());
+    std::println("{} corners -> {} vertices, {} triangles", corners.size(), vertices.size(), indices.size() / 3);
+
+    meshopt_optimizeVertexCache(indices.data(), indices.data(), indices.size(), vertices.size());
+    const meshopt_VertexCacheStatistics cache = meshopt_analyzeVertexCache(indices.data(), indices.size(), vertices.size(), 16, 0, 0);
+    std::println("vertex cache: {:.2f} misses a triangle", cache.acmr);
+
+    std::vector<unsigned int> fewer(indices.size());
+    float error = 0;
+    const std::size_t kept = meshopt_simplify(fewer.data(), indices.data(), indices.size(), &vertices[0].x, vertices.size(), sizeof(Vertex), indices.size() / 10, 0.02f, 0, &error);
+    std::println("simplified to {} triangles (error {:.4f} of the mesh's extent)", kept / 3, error);
+    return kept > 0 && kept < indices.size() ? 0 : 1;
+}

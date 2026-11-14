@@ -1,0 +1,41 @@
+# Module wrapper; upstream API preserved. Policy: mcpp-index/docs/mwrap.md.
+[package]
+namespace   = "mcpplibs.mwrap"
+name        = "meshoptimizer"
+version     = "1.3"
+description = "meshoptimizer 1.3 C++ modules for mcpp (import mcpplibs.mwrap.meshoptimizer;): mesh indexing, vertex cache / overdraw / fetch optimization, simplification, meshlets, and the vertex / index codecs"
+license     = "Apache-2.0"
+authors     = ["mcpp-community"]
+repo        = "https://github.com/mcpplibs/meshoptimizer-m"
+platforms   = ["linux", "macos", "windows"]
+
+[targets.meshoptimizer]
+kind = "lib"
+
+[build]
+# The whole library, vendored byte for byte under upstream/meshoptimizer/src
+# (upstream/documents.json: the release tarball, each file's checksum).
+sources      = ["src/*.cppm", "upstream/meshoptimizer/src/*.cpp"]
+include_dirs = ["upstream/meshoptimizer/src"]
+
+[dev-dependencies]
+compat.gtest = "1.15.2"
+
+[package.metadata.mwrap]
+upstream-version = "1.3"
+
+[[runtime.deploy]]
+from = "LICENSE"
+to   = "licenses/meshoptimizer"
+
+[[runtime.deploy]]
+from = "NOTICE"
+to   = "licenses/meshoptimizer"
+
+[[runtime.deploy]]
+from = "upstream/meshoptimizer/README.md"
+to   = "licenses/meshoptimizer/upstream/meshoptimizer"
+
+[[runtime.deploy]]
+from = "upstream/meshoptimizer/LICENSE.md"
+to   = "licenses/meshoptimizer/upstream/meshoptimizer"
